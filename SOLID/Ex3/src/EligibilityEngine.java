@@ -1,9 +1,9 @@
 import java.util.*;
 
 public class EligibilityEngine {
-    private final FakeEligibilityStore store;
+    private final EligibilityRepository store;
     private final List<Rule> rules;
-    public EligibilityEngine(FakeEligibilityStore store, List<Rule> rules) {
+    public EligibilityEngine(EligibilityRepository store, List<Rule> rules) {
         this.store = store;
         this.rules = rules;
     }

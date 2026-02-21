@@ -1,13 +1,28 @@
 import java.util.*;
 
 public class HostelFeeCalculator {
-    private final FakeBookingRepo repo;
+    private final BookingRepository repo;
+    private final RoomPricing roomPricing;
+    private final AddOnPricing addOnPricing;
 
-    public HostelFeeCalculator(FakeBookingRepo repo) { this.repo = repo; }
+    public HostelFeeCalculator(BookingRepository repo, RoomPricing roomPricing, AddOnPricing addOnPricing) {
+        this.repo = repo;
+        this.roomPricing = roomPricing;
+        this.addOnPricing = addOnPricing;
+    }
 
     // OCP violation: switch + add-on branching + printing + persistence.
     public void process(BookingRequest req) {
-        Money monthly = calculateMonthly(req);
+
+        double monthlyBasePrice = roomPricing.getPrice(req.roomType);
+
+        double addOnTotal = 0.0;
+
+        for(AddOn addOn : req.addOns){
+            addOnTotal += addOnPricing.getPrice(addOn);
+        }
+
+        Money monthly = new Money(monthlyBasePrice + addOnTotal);
         Money deposit = new Money(5000.00);
 
         ReceiptPrinter.print(req, monthly, deposit);

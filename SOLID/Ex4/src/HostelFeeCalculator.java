@@ -2,51 +2,44 @@ import java.util.*;
 
 public class HostelFeeCalculator {
     private final BookingRepository repo;
-    private final RoomPricing roomPricing;
-    private final AddOnPricing addOnPricing;
+    private final List<Room> rooms;
+    private final List<AddOnService> addOnServices;
+    private final double deposit;
 
-    public HostelFeeCalculator(BookingRepository repo, RoomPricing roomPricing, AddOnPricing addOnPricing) {
+    public HostelFeeCalculator(BookingRepository repo, List<Room> rooms, List<AddOnService> addOnServices, double deposit
+    ) {
         this.repo = repo;
-        this.roomPricing = roomPricing;
-        this.addOnPricing = addOnPricing;
+        this.rooms = rooms;
+        this.addOnServices = addOnServices;
+        this.deposit = deposit;
+
     }
 
     // OCP violation: switch + add-on branching + printing + persistence.
     public void process(BookingRequest req) {
-
-        double monthlyBasePrice = roomPricing.getPrice(req.roomType);
-
-        double addOnTotal = 0.0;
-
-        for(AddOn addOn : req.addOns){
-            addOnTotal += addOnPricing.getPrice(addOn);
+        // Find Room Price
+        double monthlyBase = 0.0;
+        for (Room r : rooms) {
+            if (r.getTypeId() == req.roomType) {
+                monthlyBase = r.getMonthlyRate();
+                break;
+            }
         }
-
-        Money monthly = new Money(monthlyBasePrice + addOnTotal);
-        Money deposit = new Money(5000.00);
+        // Find Add-On Prices
+        double addOnTotal = 0.0;
+        for (AddOn a : req.addOns) {
+            for (AddOnService service : addOnServices) {
+                if (service.getType() == a) {
+                    addOnTotal += service.getPrice();
+                }
+            }
+        }
+        Money monthly = new Money(monthlyBase + addOnTotal);
+        Money deposit = new Money(this.deposit);
 
         ReceiptPrinter.print(req, monthly, deposit);
 
         String bookingId = "H-" + (7000 + new Random(1).nextInt(1000)); // deterministic-ish
         repo.save(bookingId, req, monthly, deposit);
-    }
-
-    private Money calculateMonthly(BookingRequest req) {
-        double base;
-        switch (req.roomType) {
-            case LegacyRoomTypes.SINGLE -> base = 14000.0;
-            case LegacyRoomTypes.DOUBLE -> base = 15000.0;
-            case LegacyRoomTypes.TRIPLE -> base = 12000.0;
-            default -> base = 16000.0;
-        }
-
-        double add = 0.0;
-        for (AddOn a : req.addOns) {
-            if (a == AddOn.MESS) add += 1000.0;
-            else if (a == AddOn.LAUNDRY) add += 500.0;
-            else if (a == AddOn.GYM) add += 300.0;
-        }
-
-        return new Money(base + add);
     }
 }

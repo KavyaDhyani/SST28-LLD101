@@ -17,7 +17,17 @@ public class HostelFeeCalculator {
 
     // OCP violation: switch + add-on branching + printing + persistence.
     public void process(BookingRequest req) {
-        // Find Room Price
+
+        Money monthly = calculateMonthly(req);
+        Money deposit = new Money(this.deposit);
+
+        ReceiptPrinter.print(req, monthly, deposit);
+
+        String bookingId = "H-" + (7000 + new Random(1).nextInt(1000)); // deterministic-ish
+        repo.save(bookingId, req, monthly, deposit);
+    }
+
+    private Money calculateMonthly(BookingRequest req){
         double monthlyBase = 0.0;
         for (Room r : rooms) {
             if (r.getTypeId() == req.roomType) {
@@ -34,12 +44,7 @@ public class HostelFeeCalculator {
                 }
             }
         }
-        Money monthly = new Money(monthlyBase + addOnTotal);
-        Money deposit = new Money(this.deposit);
 
-        ReceiptPrinter.print(req, monthly, deposit);
-
-        String bookingId = "H-" + (7000 + new Random(1).nextInt(1000)); // deterministic-ish
-        repo.save(bookingId, req, monthly, deposit);
+        return new Money(monthlyBase+addOnTotal);
     }
 }

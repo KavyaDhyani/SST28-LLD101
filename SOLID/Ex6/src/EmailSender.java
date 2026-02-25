@@ -4,16 +4,15 @@ public class EmailSender extends NotificationSender {
     public EmailSender(AuditLog audit) { super(audit); }
 
     @Override
-    protected void validate(Notification n){}
+    protected void validate(Notification n){
+        if (n.body != null && n.body.length() > MAX_EMAIL_BODY) {
+            throw new IllegalArgumentException("Email body exceeds max length of " + MAX_EMAIL_BODY + " characters");
+        }
+    }
 
     @Override
     public void doSend(Notification n) {
-
-        String body = n.body;
-        if (body != null && body.length() > MAX_EMAIL_BODY) {
-            body = body.substring(0, MAX_EMAIL_BODY);
-        }
-        System.out.println("EMAIL -> to=" + n.email + " subject=" + n.subject + " body=" + body);
+        System.out.println("EMAIL -> to=" + n.email + " subject=" + n.subject + " body=" + n.body);
         audit.add("email sent");
     }
 }

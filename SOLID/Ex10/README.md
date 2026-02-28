@@ -39,7 +39,7 @@ java Main
 === Transport Booking ===
 DistanceKm=6.0
 Driver=DRV-17
-Payment=PAID txn=TXN-9001
+PaymentProcessor=PAID txn=TXN-9001
 RECEIPT: R-501 | fare=90.00
 ```
 

@@ -1,5 +1,3 @@
-package src;
-
 abstract class User {
     String id;
     String name;

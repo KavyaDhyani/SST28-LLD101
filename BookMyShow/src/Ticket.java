@@ -1,5 +1,3 @@
-package src;
-
 public class Ticket {
     String id;
     Seat seat;

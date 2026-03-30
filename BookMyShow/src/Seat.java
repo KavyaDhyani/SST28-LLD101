@@ -1,5 +1,3 @@
-package src;
-
 public class Seat {
     String id;
     SeatType type;

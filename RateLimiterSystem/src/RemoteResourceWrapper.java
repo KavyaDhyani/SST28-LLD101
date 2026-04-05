@@ -12,6 +12,6 @@ class RemoteResourceWrapper implements RemoteResource {
             return "Rate Limit Exceeded";
         }
 
-        return "Remote Resource Accessed";
+        return "External API Called";
     }
 }

@@ -10,4 +10,9 @@ class RequestDTO {
         this.ip = ip;
         this.timestamp = timestamp;
     }
+
+    // Decide rate limit key
+    public String getKey() {
+        return userId; // can switch to apiKey/ip/etc.
+    }
 }

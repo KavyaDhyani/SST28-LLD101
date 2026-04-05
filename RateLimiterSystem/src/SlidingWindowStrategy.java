@@ -6,7 +6,6 @@ class SlidingWindowStrategy implements RLStrategy {
     public boolean validateRequest(Queue<RequestDTO> queue, int maxReq, RequestDTO request, long windowSize) {
         long threshold = request.timestamp - windowSize;
 
-        // Remove expired requests
         while (!queue.isEmpty() && queue.peek().timestamp <= threshold) {
             queue.poll();
         }

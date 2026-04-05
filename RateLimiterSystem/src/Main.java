@@ -5,43 +5,28 @@ public class Main {
         int maxRequests = 3;
         long windowSize = 5000; // 5 seconds
 
-        // Choose strategy
         RLStrategy strategy = RLFactory.getStrategy("SLIDING");
 
-        // Build system
         RateLimiter rateLimiter = new RateLimiter(maxRequests, windowSize, strategy);
         RLService rlService = new RLService(rateLimiter);
         RemoteResource resource = new RemoteResourceWrapper(rlService);
 
-        String user = "user1";
+        // Simulating multiple users
+        String[] users = {"user1", "user2"};
 
-        // First burst of requests
-        for (int i = 1; i <= 5; i++) {
-            RequestDTO request = new RequestDTO(
-                    user,
-                    "apiKey",
-                    "127.0.0.1",
-                    System.currentTimeMillis()
-            );
+        for (int i = 1; i <= 6; i++) {
+            for (String user : users) {
+                RequestDTO request = new RequestDTO(
+                        user,
+                        "apiKey",
+                        "127.0.0.1",
+                        System.currentTimeMillis()
+                );
 
-            System.out.println("Request " + i + ": " + resource.callRemote(request));
-            Thread.sleep(1000);
-        }
+                System.out.println("User: " + user + " Request " + i + ": " +
+                        resource.callRemote(request));
+            }
 
-        // Wait for reset
-        System.out.println("\n⏳ Waiting for window reset...\n");
-        Thread.sleep(6000);
-
-        // Second burst
-        for (int i = 6; i <= 10; i++) {
-            RequestDTO request = new RequestDTO(
-                    user,
-                    "apiKey",
-                    "127.0.0.1",
-                    System.currentTimeMillis()
-            );
-
-            System.out.println("Request " + i + ": " + resource.callRemote(request));
             Thread.sleep(1000);
         }
     }

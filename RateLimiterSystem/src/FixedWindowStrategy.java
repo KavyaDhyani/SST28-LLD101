@@ -6,7 +6,6 @@ class FixedWindowStrategy implements RLStrategy {
     public boolean validateRequest(Queue<RequestDTO> queue, int maxReq, RequestDTO request, long windowSize) {
         long currentWindow = request.timestamp / windowSize;
 
-        // Remove requests not in current window
         while (!queue.isEmpty()) {
             RequestDTO req = queue.peek();
             long reqWindow = req.timestamp / windowSize;
